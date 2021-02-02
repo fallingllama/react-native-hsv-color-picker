@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   View,
-  TouchableWithoutFeedback,
   ViewPropTypes,
   PanResponder,
   StyleSheet,
@@ -14,18 +13,18 @@ import normalizeValue from './utils';
 export default class SaturationValuePicker extends Component {
   constructor(props) {
     super(props);
-    this.firePressEvent = this.firePressEvent.bind(this);
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onStartShouldSetPanResponderCapture: () => true,
       onMoveShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
       onPanResponderGrant: (evt, gestureState) => {
-        const { saturation, value } = this.props;
-        this.dragStartValue = {
-          saturation,
-          value,
-        };
+        this.dragStartValue = this.computeSatValPress({
+          nativeEvent: {
+            locationX: evt.nativeEvent.locationX,
+            locationY: evt.nativeEvent.locationY,
+          }
+        });
         this.fireDragEvent('onDragStart', gestureState);
       },
       onPanResponderMove: (evt, gestureState) => {
@@ -33,6 +32,7 @@ export default class SaturationValuePicker extends Component {
       },
       onPanResponderTerminationRequest: () => true,
       onPanResponderRelease: (evt, gestureState) => {
+        this.fireReleaseEvent(evt);
         this.fireDragEvent('onDragEnd', gestureState);
       },
       onPanResponderTerminate: (evt, gestureState) => {
@@ -42,7 +42,7 @@ export default class SaturationValuePicker extends Component {
     });
   }
 
-  getCurrentColor() {
+  getCurrentColor = () => {
     const { hue, saturation, value } = this.props;
     return chroma.hsv(
       hue,
@@ -51,7 +51,7 @@ export default class SaturationValuePicker extends Component {
     ).hex();
   }
 
-  computeSatValDrag(gestureState) {
+  computeSatValDrag = (gestureState) => {
     const { dx, dy } = gestureState;
     const { size } = this.props;
     const { saturation, value } = this.dragStartValue;
@@ -63,7 +63,7 @@ export default class SaturationValuePicker extends Component {
     };
   }
 
-  computeSatValPress(event) {
+  computeSatValPress = (event) => {
     const { nativeEvent } = event;
     const { locationX, locationY } = nativeEvent;
     const { size } = this.props;
@@ -73,7 +73,7 @@ export default class SaturationValuePicker extends Component {
     };
   }
 
-  fireDragEvent(eventName, gestureState) {
+  fireDragEvent = (eventName, gestureState) => {
     const { [eventName]: event } = this.props;
     if (event) {
       event({
@@ -83,7 +83,7 @@ export default class SaturationValuePicker extends Component {
     }
   }
 
-  firePressEvent(event) {
+  fireReleaseEvent = (event) => {
     const { onPress } = this.props;
     if (onPress) {
       onPress({
@@ -113,36 +113,35 @@ export default class SaturationValuePicker extends Component {
             width: size + sliderSize,
           },
         ]}
+        {...this.panResponder.panHandlers}
       >
-        <TouchableWithoutFeedback onPress={this.firePressEvent}>
+        <LinearGradient
+          style={{
+            borderRadius,
+          }}
+          colors={[
+            '#fff',
+            chroma.hsl(hue, 1, 0.5).hex(),
+          ]}
+          start={[0, 0.5]}
+          end={[1, 0.5]}
+        >
           <LinearGradient
-            style={{
-              borderRadius,
-            }}
             colors={[
-              '#fff',
-              chroma.hsl(hue, 1, 0.5).hex(),
+              'rgba(0, 0, 0, 0)',
+              '#000',
             ]}
-            start={[0, 0.5]}
-            end={[1, 0.5]}
           >
-            <LinearGradient
-              colors={[
-                'rgba(0, 0, 0, 0)',
-                '#000',
-              ]}
-            >
-              <View
-                style={{
-                  height: size,
-                  width: size,
-                }}
-              />
-            </LinearGradient>
+            <View
+              style={{
+                height: size,
+                width: size,
+              }}
+            />
           </LinearGradient>
-        </TouchableWithoutFeedback>
+        </LinearGradient>
         <View
-          {...this.panResponder.panHandlers}
+           pointerEvents="none"
           style={[
             styles.slider,
             {
