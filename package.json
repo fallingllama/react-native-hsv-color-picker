@@ -1,6 +1,6 @@
 {
-  "name": "react-native-hsv-color-picker",
-  "version": "1.0.1",
+  "name": "@fallingllama/react-native-hsv-color-picker",
+  "version": "1.0.2",
   "description": "a react native HSV(hue, saturation, value) color picker",
   "author": "Yuan Fu",
   "bugs": {
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/yuanfux/react-native-hsv-color-picker",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yuanfux/react-native-hsv-color-picker.git"
+    "url": "https://github.com/fallingllama/react-native-hsv-color-picker.git"
   },
   "keywords": [
     "react native",

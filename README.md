@@ -1,3 +1,4 @@
+ℹ️ Forked from https://github.com/yuanfux/react-native-hsv-color-picker.git 
 
 # react-native-hsv-color-picker
 > a react native HSV(hue, saturation, value) color picker
